@@ -1,12 +1,11 @@
 vReporter is a modular version of Alan Renouf's vCheck v5 script 
 (http://goo.gl/WYpr) incorporating Brian Wuchner's (enterpriseadmins.org)
-modifications begining with version 5.47 (http://goo.gl/iOxo9)
+modifications beginning with version 5.47 (http://goo.gl/iOxo9)
 
 The goal of vReporter is to us the excellent vCheck script as a foundation
-and create a modulare VMware daily report which will allow easy additions of
+and create a modular VMware daily report which will allow easy additions of
 different reports.
 
 The hope is the easier it is to add to the report, the more the community
-will get involved creating report modules, providing improvments to
-the core, improvments to look of the reports, or whatever!
- 
+will get involved creating report modules, providing improvements to
+the core, improvements to look of the reports, or whatever!
