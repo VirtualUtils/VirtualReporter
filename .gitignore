@@ -1,0 +1,7 @@
+*.sln
+*.suo
+*.psproj
+obj/
+bin/
+debug/
+vCheck.npp
