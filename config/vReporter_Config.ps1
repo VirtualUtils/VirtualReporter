@@ -89,7 +89,7 @@ $ShowClusterConfig = $true
   $checkClusterDataStores = $true  #good for VM datastored
   $checkClusterLUNs = $true        #good for LUNs used by RDM
   $checkClusterPortGroups = $true  #mis-matched port groups within a cluster
-$checkClusterBIOSVersions = $true #inconsistent BIOS versions in cluster
+  $checkClusterBIOSVersions = $true #inconsistent BIOS versions in cluster
 # Snapshot Information
 $ShowSnap = $true
 # Datastore Information
