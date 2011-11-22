@@ -96,7 +96,7 @@ $Version = "5.40"
 ##-------------------------------------------
 ## Load config file
 ##-------------------------------------------
-. .\config\vCheck_Config.ps1
+. .\config\vReporter_Config.ps1
 
 ##-------------------------------------------
 ## Load Script Libraries
@@ -106,9 +106,10 @@ $Version = "5.40"
 $coreLibHome = ".\lib\"
 $modHome = ".\modules\"
 
-# Load modules from libraries
+# Load core libraries
 Get-ChildItem ($coreLibHome + "*.ps1") | ForEach-Object {. (Join-Path $coreLibHome $_.Name)} | Out-Null
 
+# Load report modules
 $userMods = Get-ChildItem ($modHome + "*.ps1")
 $userMods | ForEach-Object {. (Join-Path $modHome $_.Name)} | Out-Null
 
