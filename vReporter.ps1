@@ -93,6 +93,9 @@ $Version = "5.40"
 # Version 1.6 - Add details to service state to see if it is expected or not
 # Version 1.5 - Check for objects to see if they exist before sending the email + add VMs with No VMTools 
 
+# -> RJS October 17, 2011
+# Modified vCheck script to a self discovering modular approach
+
 ##-------------------------------------------
 ## Load config file
 ##-------------------------------------------
@@ -113,19 +116,14 @@ Get-ChildItem ($coreLibHome + "*.ps1") | ForEach-Object {. (Join-Path $coreLibHo
 $userMods = Get-ChildItem ($modHome + "*.ps1")
 $userMods | ForEach-Object {. (Join-Path $modHome $_.Name)} | Out-Null
 
-# Remove extension from module names, leaving a list of functions to call
-$modsToCall = @()
-
-foreach ($module in $userMods) {
-  $modsToCall += $module.Name.substring(0, $module.Name.LastIndexOf("."))
-}
+# <- RJS October 17, 2011
 
 ##-------------------------------------------
 # Start of script
 ##-------------------------------------------
 
 # Turn off Errors
-$ErrorActionPreference = "silentlycontinue"
+#$ErrorActionPreference = "silentlycontinue"
 
 # Check for passed vCenter Server
 if ($VISRV -eq "") {
@@ -152,10 +150,6 @@ if (!(Get-Command Get-PowerCLIVersion -errorAction SilentlyContinue)) {
 	send-SMTPmail -to $EmailTo -from $EmailFrom -subject "ERROR: $VISRV vCheck" -smtpserver $SMTPSRV -body "The Get-PowerCLIVersion Cmdlet was not found, please check your vCheck client machine [$($ENV:Computername)]."
 	exit
 }
-
-# We need to know the version number even if it doesn't show up on the report
-# Combine with above version check?
-$powercliVersion = Get-PowerCliVersion
 
 Write-CustomOut "Connecting to VI Server"
 $VIServer = Connect-VIServer $VISRV
@@ -186,6 +180,7 @@ If ((Get-View ServiceInstance).Content.About.Version -ge "4.0.0") {
 	$VIVersion = 3
 }
 
+# Get core VMware objects for the modules
 Write-CustomOut "Collecting VM Objects"
 $VM = Get-VM | Sort Name
 
@@ -227,12 +222,37 @@ If ($serviceInstance.Client.ServiceContent.About.Version -ge 4) {
 $MyReport = Get-CustomHTML "$VIServer vCheck"
 $MyReport += Get-CustomHeader0 ($VIServer.Name)
 
-# Loop over all module names that are in the config folder
-foreach ($module in $modsToCall) {
-  $MyReport += Invoke-Expression $module
-}
+# -> RJS December 5 23, 2011
+# Call all modules, tracking the execution time of each module as well as the overall time
+# Would be nice to add a formated table of the results to the end of the report so timings can be
+# easily referenced
+Write-CustomOut "..Beginning execution of $($modsToCall.Count) modules"
+
+$totalModExecutionTime = (Measure-Command {
+
+  foreach ($module in $userMods) {
+	# Remove prefix and extension from module names
+	# Assumes 4 character prefix, and 4 character extension
+	# Any variation and this will break
+	$moduleToCall = $module.Name.substring(4, $module.Name.Length - 8)
+	
+	Write-CustomOut "..Beginning execution of $moduleToCall"
+	
+    $modExecutionTime = (Measure-Command {
+	  
+	  $MyReport += Invoke-Expression $moduleToCall
+    }).TotalSeconds
+    
+    Write-CustomOut "..Finished execution of $moduleToCall in $modExecutionTime seconds"
+  }
+}).TotalSeconds
+
+Write-CustomOut "..Finished execution of modules. Total execution time was $totalModExecutionTime"
+# <- RJS December 5 23, 2011
 
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
+
+exportReports
 
 $VIServer | Disconnect-VIServer -Confirm:$false
