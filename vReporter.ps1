@@ -173,56 +173,33 @@ if ($VIServer.IsConnected -ne $true) {
 	}
 }
 
-# Find out which version of the API we are connecting to
+# Find out which version of the API we are connecting to / Check for vSphere
 If ((Get-View ServiceInstance).Content.About.Version -ge "4.0.0") {
 	$VIVersion = 4
+  $vSphere = $true
 } else {
 	$VIVersion = 3
+  $vSphere = $false
 }
+
+# -> RJS December 19, 2011
+# Call Get-CoreObjects to get all objects required for nodules
+# Future: Remove global variables from the function and return a data structure
+#         and either pass the structure to the modules, or the required object(s)
+#         from the structure.
 
 # Get core VMware objects for the modules
-Write-CustomOut "Collecting VM Objects"
-$VM = Get-VM | Sort Name
+Get-CoreObjects
 
-Write-CustomOut "Collecting Datacenter Objects"
-$Datacenter = get-datacenter | sort name
-
-Write-CustomOut "Collecting VM Host Objects"
-$VMH = Get-VMHost | Sort Name
-
-Write-CustomOut "Collecting Cluster Objects"
-$Clusters = Get-Cluster | Sort Name
-
-Write-CustomOut "Collecting Datastore Objects"
-$Datastores = Get-Datastore | Sort Name
-
-Write-CustomOut "Collecting Detailed VM Objects"
-$FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
-
-Write-CustomOut "Collecting Template Objects"
-$VMTmpl = Get-Template
-
-Write-CustomOut "Collecting Detailed VI Objects"
-$serviceInstance = get-view ServiceInstance
-
-Write-CustomOut "Collecting Detailed Alarm Objects"
-$alarmMgr = get-view $serviceInstance.Content.alarmManager
-
-Write-CustomOut "Collecting Detailed VMHost Objects"
-$HostsViews = Get-View -ViewType hostsystem
+# <- RJS December 19, 2011
 
 $Date = Get-Date
-
-# Check for vSphere
-If ($serviceInstance.Client.ServiceContent.About.Version -ge 4) {
-	$vSphere = $true
-}
 
 # Create report
 $MyReport = Get-CustomHTML "$VIServer vCheck"
 $MyReport += Get-CustomHeader0 ($VIServer.Name)
 
-# -> RJS December 5 23, 2011
+# -> RJS December 5, 2011
 # Call all modules, tracking the execution time of each module as well as the overall time
 # Would be nice to add a formated table of the results to the end of the report so timings can be
 # easily referenced
@@ -248,7 +225,7 @@ $totalModExecutionTime = (Measure-Command {
 }).TotalSeconds
 
 Write-CustomOut "..Finished execution of modules. Total execution time was $totalModExecutionTime"
-# <- RJS December 5 23, 2011
+# <- RJS December 5, 2011
 
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
