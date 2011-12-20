@@ -2,32 +2,32 @@
 function Get-CoreObjects {
 
   Write-CustomOut "Collecting VM Objects"
-  $VM = Get-VM | Sort Name
+  Set-Variable -Name VM -Value $(Get-VM | Sort Name) -Scope Global
 
   Write-CustomOut "Collecting Datacenter Objects"
-  $Datacenter = get-datacenter | sort name
+  Set-Variable -Name Datacenter -Value $(Get-Datacenter | Sort Name) -Scope Global
 
   Write-CustomOut "Collecting VM Host Objects"
-  $VMH = Get-VMHost | Sort Name
+  Set-Variable -Name VMH -Value $(Get-VMHost | Sort Name) -Scope Global
 
   Write-CustomOut "Collecting Cluster Objects"
-  $Clusters = Get-Cluster | Sort Name
+  Set-Variable -Name Clusters -Value $(Get-Cluster | Sort Name) -Scope Global
 
   Write-CustomOut "Collecting Datastore Objects"
-  $Datastores = Get-Datastore | Sort Name
+  Set-Variable -Name Datastores -Value $(Get-Datastore | Sort Name) -Scope Global
 
   Write-CustomOut "Collecting Detailed VM Objects"
-  $FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
+  Set-Variable -Name FullVM -Value $(Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}) -Scope Global
 
   Write-CustomOut "Collecting Template Objects"
-  $VMTmpl = Get-Template
+  Set-Variable -Name VMTmpl -Value $(Get-Template) -Scope Global
 
   Write-CustomOut "Collecting Detailed VI Objects"
-  $serviceInstance = get-view ServiceInstance
+  Set-Variable -Name serviceInstance -Value $(get-view ServiceInstance) -Scope Global
 
   Write-CustomOut "Collecting Detailed Alarm Objects"
-  $alarmMgr = get-view $serviceInstance.Content.alarmManager
+  Set-Variable -Name alarmMgr -Value $(get-view $serviceInstance.Content.alarmManager) -Scope Global
 
   Write-CustomOut "Collecting Detailed VMHost Objects"
-  $HostsViews = Get-View -ViewType hostsystem
+  Set-Variable -Name HostsViews -Value $(Get-View -ViewType hostsystem) -Scope Global
 }
