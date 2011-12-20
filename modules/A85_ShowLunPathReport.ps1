@@ -1,5 +1,5 @@
 # ---- Dead LunPath ----
-function ShowLunPath () {
+function ShowLunPathReport () {
 
   if ($ShowLunPath) {
   
