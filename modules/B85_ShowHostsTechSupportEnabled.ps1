@@ -1,10 +1,10 @@
 # ---- ESXi Technical Support Mode ----
-function ShowHostsTechSupportEnabled () {
+function ShowHostsTechSupportEnabled ([hashtable]$vCheckDataObjects) {
   if ($ShowTech) {
     
     Write-CustomOut "..Checking for ESXi with Technical Support mode enabled"
     
-    $ESXiTechMode = $VMH | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Get-View | Where {$_.Summary.Config.Product.Name -match "i"} | Select Name, @{N="TechSuportModeEnabled";E={(Get-VMHost $_.Name | Get-VMHostAdvancedConfiguration -Name VMkernel.Boot.techSupportMode).Values}}
+    $ESXiTechMode = $vCheckDataObjects["VMH"] | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Get-View | Where {$_.Summary.Config.Product.Name -match "i"} | Select Name, @{N="TechSuportModeEnabled";E={(Get-VMHost $_.Name | Get-VMHostAdvancedConfiguration -Name VMkernel.Boot.techSupportMode).Values}}
     $ESXTech = @($ESXiTechMode | Where { $_.TechSuportModeEnabled -eq "True" })
     
     if (($ESXTech | Measure-Object).count -gt 0 -or $ShowAllHeaders) {

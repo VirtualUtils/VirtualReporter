@@ -1,5 +1,5 @@
 # ---- vSwitch Ports Check ----		
-function ShowVSwitchCheck () {
+function ShowVSwitchCheck ([hashtable]$vCheckDataObjects) {
 
   if ($ShowVSwitchCheck){
   
@@ -7,8 +7,8 @@ function ShowVSwitchCheck () {
 
     $vswitchinfo = @()
 
-    foreach ($vhost in $VMH) {
-      foreach ($vswitch in ($vhost|Get-VirtualSwitch)) {
+    foreach ($vhost in $vCheckDataObjects["VMH"]) {
+      foreach ($vswitch in ($vhost | Get-VirtualSwitch)) {
         $vswitchinf = "" | Select VMHost, vSwitch, PortsLeft
         $vswitchinf.VMHost = $vhost
         $vswitchinf.vSwitch = $vswitch.name

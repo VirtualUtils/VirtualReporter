@@ -1,5 +1,5 @@
 # ---- Hosts VMware Update Manager Baseline non-compliance ---- 
-function ShowHostVUMNonCompliance () {
+function ShowHostVUMNonCompliance ([hashtable]$vCheckDataObjects) {
 
   if ($ShowHostVUMNonCompliance) {
 
@@ -24,7 +24,7 @@ function ShowHostVUMNonCompliance () {
       }
     }
 
-    If (($vHostVUMNonCompliance | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
+    if (($vHostVUMNonCompliance | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
       $hostVUMNonComplianceReport += Get-CustomHeader "Hosts VMware Update Manager Baseline non-compliance : $($vHostVUMNonCompliance.count)" "The following hosts are not compliant to the attached baselines"
       $hostVUMNonComplianceReport += Get-HTMLTable $vHostVUMNonCompliance
       $hostVUMNonComplianceReport += Get-CustomHeaderClose

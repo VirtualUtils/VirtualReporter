@@ -1,12 +1,13 @@
 # ---- VM Guest OS Pivot Table ----
-function ShowGuestOSPivot () {
+function ShowGuestOSPivot ([hashtable]$vCheckDataObjects) {
 
   if ($ShowGuestOSPivot) {
   
     Write-CustomOut "..Creating Guest OS Pivot table"
 
-    $VMOSversions = @{ }
-    $VM | Get-View | % {
+    $VMOSversions = @{}
+		
+    $vCheckDataObjects["VM"] | Get-View | %{
     
     # Prefer to use GuestFullName but try AltGuestName first
       if ($_.Config.AlternateGuestName) { $VMOSversion = $_.Config.AlternateGuestName }
@@ -37,12 +38,12 @@ function ShowGuestOSPivot () {
     
     $vVMOSversions = $myCol | sort Count -desc
     
-    If (($vVMOSversions | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
+    if (($vVMOSversions | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
       $guestOSPivotReport += Get-CustomHeader "VMs by Operating System : $($vVMOSversions.count)" "The following Operating Systems are in use in this vCenter."
       $guestOSPivotReport += Get-HTMLTable $vVMOSversions
       $guestOSPivotReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $guestOSPivotReport
 }

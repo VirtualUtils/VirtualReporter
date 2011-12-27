@@ -1,12 +1,12 @@
 # ---- VMSwapfileDatastore not set----
-function ShowSwapFile () {
+function ShowSwapFile ([hashtable]$vCheckDataObjects) {
 
   if ($ShowSwapFile) {
 
     Write-CustomOut "..Checking Host Swapfile datastores"
     $cluswap = @()
     
-    foreach ($clusview in $clusviews) {
+    foreach ($clusview in $vCheckDataObjects["ClusterViews"]) {
       if ($clusview.ConfigurationEx.VmSwapPlacement -eq "hostLocal") {
         $CluNodesViews = Get-VMHost -Location $clusview.name |Get-View
     

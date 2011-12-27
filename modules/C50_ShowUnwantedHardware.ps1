@@ -1,12 +1,12 @@
 # ---- Unwanted hardware connected ----		
-function ShowUnwantedHardware () {
+function ShowUnwantedHardware ([hashtable]$vCheckDataObjects) {
 
-  if ($ShowUnwantedHardware){  
+  if ($ShowUnwantedHardware) {  
     
     #Thanks to @lucd http://communities.vmware.com/message/1546618
     $vUnwantedHw = @()
 
-    foreach ($vmguest in ($vm | get-view)) {
+    foreach ($vmguest in $vCheckDataObjects["FullVM"]) {
         $vmguest.Config.Hardware.Device | where {$_.GetType().Name -match $unwantedHardware} |  %{
         $myObj = "" | select Name,Label
         $myObj.Name = $vmguest.name 
@@ -21,6 +21,6 @@ function ShowUnwantedHardware () {
       $unwantedHardwareReport += Get-CustomHeaderClose
     }
   }
- 
+
   return $unwantedHardwareReport
 }

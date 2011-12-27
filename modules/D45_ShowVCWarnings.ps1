@@ -1,7 +1,7 @@
 # ---- Virtual Center Event Logs - Warning ----
 function ShowVCWarnings () {
 
-  if ($ShowVCWarnings){
+  if ($ShowVCWarnings) {
   
     Write-CustomOut "..Checking VC Warning Event Logs"
    
@@ -9,7 +9,7 @@ function ShowVCWarnings () {
 
     if ($SetUsername -ne ""){
       $WarnLogs = @(Get-WmiObject -Credential $creds -computer $VIServer -query ("Select * from Win32_NTLogEvent Where Type='Warning' and TimeWritten >='" + $ConvDate + "'") | Where {$_.Message -like "*VMware*"} | Select @{N="TimeGenerated";E={$_.ConvertToDateTime($_.TimeGenerated)}}, Message)
-    } Else {
+    } else {
       $WarnLogs = @(Get-WmiObject -computer $VIServer -query ("Select * from Win32_NTLogEvent Where Type='Warning' and TimeWritten >='" + $ConvDate + "'") | Where {$_.Message -like "*VMware*"} | Select @{N="TimeGenerated";E={$_.ConvertToDateTime($_.TimeGenerated)}}, Message )
     }
 

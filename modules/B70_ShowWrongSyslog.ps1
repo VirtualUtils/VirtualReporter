@@ -1,13 +1,13 @@
 # Show VM Hosts with incorrect syslog server
 # By bwuch
-function ShowWrongSyslog () {
+function ShowWrongSyslog ([hashtable]$vCheckDataObjects) {
 
   if ($ShowWrongSyslog) {
   
     Write-CustomOut "..Checking VM Host syslog server"
     $wrongSyslog = @()
 
-    foreach ($vmhost in ($VMH | Where {$_.ConnectionState -ne "Disconnected"} | Select Name, @{N="SLServer";E={$_ | Get-VMHostSyslogServer}} | Where {$_.SLServer -notmatch $syslogserver})) {
+    foreach ($vmhost in ($vCheckDataObjects["VMH"] | Where {$_.ConnectionState -ne "Disconnected"} | Select Name, @{N="SLServer";E={$_ | Get-VMHostSyslogServer}} | Where {$_.SLServer -notmatch $syslogserver})) {
       $myObj = "" | select Name,SyslogServer
       $myObj.name = $vmhost.name
       $myObj.SyslogServer = $vmhost.SLServer

@@ -1,4 +1,4 @@
-function ExportReports {
+function ExportReports ([hashtable]$vCheckDataObjects) {
 
   #The following couple of lines verify that variables are in required formats
   Write-CustomOut "..Processing report export"
@@ -14,7 +14,7 @@ function ExportReports {
   }
 
   #The following lines cause the report to export to a file.  The name changes based on the date/time the vCheck is executed. This is required if you plan to open the file or attach it to an email.  It is not required if you send the report in the body of the message.
-  $Filename = $exportDirectory+"\"+$VISrv+"vCheck"+"_"+$date.ToString($dateFormat)+".htm"
+  $Filename = $exportDirectory+"\"+$VISrv+"vCheck"+"_"+$vCheckDataObjects["date"].ToString($dateFormat)+".htm"
   $MyReport | out-file -encoding ASCII -filepath $Filename
 
   #The following line causes the report to appear on screen (you must export to file in the above section too)

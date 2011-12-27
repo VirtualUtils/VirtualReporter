@@ -1,13 +1,13 @@
 # ---- VM Alarm ----
-function ShowVMAlarm () {
+function ShowVMAlarm ([hashtable]$vCheckDataObjects) {
 
-  if ($ShowVMAlarm){
+  if ($ShowVMAlarm) {
   
     Write-CustomOut "..Checking VM Alarms"
     
     $vmsalarms = @()
 
-    foreach ($VMView in $FullVM) {
+    foreach ($VMView in $vCheckDataObjects["FullVM"]) {
 
       if ($VMView.TriggeredAlarmState) {
         $VMsTriggeredAlarms = $VMView.TriggeredAlarmState

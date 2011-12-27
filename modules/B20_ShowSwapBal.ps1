@@ -1,11 +1,11 @@
 # ---- VMs Swapping or Ballooning ----
-function ShowSwapBal () {
+function ShowSwapBal ([hashtable]$vCheckDataObjects) {
 
   if ($ShowSwapBal) {
 
     Write-CustomOut "..Checking for VMs swapping or Ballooning"
 
-    $BALSWAP = $vm | Where {$_.PowerState -eq "PoweredOn" }| Select Name, VMHost, @{N="SwapKB";E={(Get-Stat -Entity $_ -Stat mem.swapped.average -Realtime -MaxSamples 1 -ErrorAction SilentlyContinue).Value}}, @{N="MemBalloonKB";E={(Get-Stat -Entity $_ -Stat mem.vmmemctl.average -Realtime -MaxSamples 1 -ErrorAction SilentlyContinue).Value}}
+    $BALSWAP = $vCheckDataObjects["VM"] | Where {$_.PowerState -eq "PoweredOn" }| Select Name, VMHost, @{N="SwapKB";E={(Get-Stat -Entity $_ -Stat mem.swapped.average -Realtime -MaxSamples 1 -ErrorAction SilentlyContinue).Value}}, @{N="MemBalloonKB";E={(Get-Stat -Entity $_ -Stat mem.vmmemctl.average -Realtime -MaxSamples 1 -ErrorAction SilentlyContinue).Value}}
 
     $bs = @($BALSWAP | Where { $_.SwapKB -gt 0 -or $_.MemBalloonKB -gt 0}) | Sort SwapKB -Descending
     

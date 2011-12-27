@@ -1,11 +1,11 @@
 # ---- Host Alarm ----
-function ShowHostAlarm () {
+function ShowHostAlarm ([hashtable]$vCheckDataObjects) {
 
   if ($ShowHostAlarm) {
     
     Write-CustomOut "..Checking Host Alarms"
     
-    $alarms = $alarmMgr.GetAlarm($null)
+    $alarms = $vCheckDataObjects["alarmMgr"].GetAlarm($null)
     $valarms = $alarms | select value, @{N="name";E={(Get-View -Id $_).Info.Name}}
     $hostsalarms = @()
 

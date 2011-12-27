@@ -1,19 +1,19 @@
 # Cluster CPU allocation ratios
-function ShowCPUClusterRatio() {
+function ShowCPUClusterRatio([hashtable]$vCheckDataObjects) {
 
   if ($ShowCPUClusterRatio) {
   
     Write-CustomOut "..Checking Cluster CPU ratio"
     $FullClusterDetail = @()
     
-    foreach ($Cluster in $Clusters) {
+    foreach ($Cluster in $vCheckDataObjects["Clusters"]) {
 		
 			$clusterVMHosts = $Cluster | Get-VMHost | Sort Name
 
 			# If cluster has hosts, then process
 			if ($clusterVMHosts) {
 			
-				$guestcnt,$clustervcpu,$hostCount,$clustercores = 0,0,0,0
+				$guestcnt, $clustervcpu, $hostCount, $clustercores = 0,0,0,0
 				
 				foreach ($ESXHost in $clusterVMHosts) {
 					$hostview = $ESXHost | get-view
@@ -48,6 +48,6 @@ function ShowCPUClusterRatio() {
       $CPUClusterRatioReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $CPUClusterRatioReport
 }

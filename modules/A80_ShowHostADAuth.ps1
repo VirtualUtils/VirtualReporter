@@ -1,12 +1,12 @@
 # ---- Hosts without AD Auth Enabled ----
-function ShowHostADAuth () {
+function ShowHostADAuth ([hashtable]$vCheckDataObjects) {
 
   if ($ShowHostADAuth) {
     
     Write-CustomOut "..Checking Host AD Authentication"			
     
     $myObj = @()
-    $VMH | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | %{
+    $vCheckDataObjects["VMH"] | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | %{
 
     if ($_.Version -ge "4.1.0") {
         if ((Get-VMHostAuthentication $_ | where {$_.type -eq "Active Directory" }).enabled -eq $false) {
@@ -23,7 +23,7 @@ function ShowHostADAuth () {
       }
     }
 
-    If (($myObj | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
+    if (($myObj | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
       $hostADAuthReport += Get-CustomHeader "4.1 hosts without AD Authentication configured : $($myObj.count)" "ESX/ESXi 4.1 and higher support Active Directory Authentication but this host is not configured for that feature."
       $hostADAuthReport += Get-HTMLTable $myObj
       $hostADAuthReport += Get-CustomHeaderClose

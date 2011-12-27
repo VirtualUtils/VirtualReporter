@@ -1,5 +1,5 @@
 # ---- VMs in inconsistent folders ----
-function ShowInconsistentFolders () {
+function ShowInconsistentFolders ([hashtable]$vCheckDataObjects) {
 
   if ($Showfolders){
 
@@ -7,7 +7,7 @@ function ShowInconsistentFolders () {
     
     $VMFolder = @()
 
-    foreach ($CHKVM in $FullVM){
+    foreach ($CHKVM in $vCheckDataObjects["FullVM"]){
       $Details = "" |Select-Object VM,Path
       $Folder = ((($CHKVM.Summary.Config.VmPathName).Split(']')[1]).Split('/'))[0].TrimStart(' ')
       $Path = ($CHKVM.Summary.Config.VmPathName).Split('/')[0]

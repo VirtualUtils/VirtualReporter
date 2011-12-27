@@ -1,14 +1,14 @@
 # ---- Host hardware issues ----
 # bwuch Hardware request feature request from RobVM
 # with help from http://spininfo.homelinux.com/news/vSphere_PowerCLI/2009/12/13/Vsphere_Host_Health_status_-_VI_SDK
-function ShowHostHdwrIssues () {
+function ShowHostHdwrIssues ([hashtable]$vCheckDataObjects) {
 
   if ($ShowHostHdwrIssues) {
   
     Write-CustomOut "..Checking host hardware issues"
     $MyObj = @()
 
-    foreach ($hdwrCheckHost in $VMH) {
+    foreach ($hdwrCheckHost in $vCheckDataObjects["VMH"]) {
       $esx = Get-VMHost $hdwrCheckHost | Get-View
       $systemHealthInfo = $esx.Runtime.HealthSystemRuntime.SystemHealthInfo
 
@@ -24,7 +24,7 @@ function ShowHostHdwrIssues () {
       }
     }
     
-    If (($myObj | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
+    if (($myObj | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
       $hostHdwrIssuesReport += Get-CustomHeader "Hosts with hardware sensor issues : $($myObj.count)" "Non-green status on host hardware sensors may indicate a possible hardware issue and may require investigation."
       $hostHdwrIssuesReport += Get-HTMLTable $myObj
       $hostHdwrIssuesReport += Get-CustomHeaderClose

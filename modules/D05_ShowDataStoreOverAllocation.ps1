@@ -1,18 +1,18 @@
 # ---- Datastore OverAllocation ----
-function ShowDataStoreOverAllocation () {
+function ShowDataStoreOverAllocation ([hashtable]$vCheckDataObjects) {
 
   if ($ShowOverAllocation) {
   
     Write-CustomOut "..Checking Datastore OverAllocation"
     
-    $storages = $Datastores |Get-View
+    $dataStoreViews = $vCheckDataObjects["Datastores"] | Get-View
     $voverallocation = @()
     
-    foreach ($storage in $storages) {
-      if ($storage.Summary.Uncommitted -gt "0") {
+    foreach ($dataStore in $dataStoreViews) {
+      if ($dataStore.Summary.Uncommitted -gt "0") {
         $Details = "" | Select-Object Datastore, Overallocation
-        $Details.Datastore = $storage.name
-        $Details.overallocation = [math]::round(((($storage.Summary.Capacity - $storage.Summary.FreeSpace) + $storage.Summary.Uncommitted)*100)/$storage.Summary.Capacity,0)
+        $Details.Datastore = $dataStore.name
+        $Details.overallocation = [math]::round(((($dataStore.Summary.Capacity - $dataStore.Summary.FreeSpace) + $dataStore.Summary.Uncommitted)*100)/$dataStore.Summary.Capacity,0)
       
         if ($Details.overallocation -gt $OverAllocation) {
           $voverallocation += $Details

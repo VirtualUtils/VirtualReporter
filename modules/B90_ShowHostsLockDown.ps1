@@ -1,10 +1,10 @@
 # ---- ESXi Lockdown Mode ----
-function ShowHostsLockDown () {
+function ShowHostsLockDown ([hashtable]$vCheckDataObjects) {
   if ($Lockdown){	
    
     Write-CustomOut "..Checking for ESXi hosts which do not have Lockdown mode enabled"
     
-    $ESXiLockDown = $VMH | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Get-View | Where {$_.Summary.Config.Product.Name -match "i"} | Select Name, @{N="LockedMode";E={$_.Config.AdminDisabled}}
+    $ESXiLockDown = $vCheckDataObjects["VMH"] | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Get-View | Where {$_.Summary.Config.Product.Name -match "i"} | Select Name, @{N="LockedMode";E={$_.Config.AdminDisabled}}
     $ESXiUnlocked = @($ESXiLockDown | Where { $_.LockedMode -ne "False" })
     
     if (($ESXiUnlocked | Measure-Object).count -gt 0 -or $ShowAllHeaders) {

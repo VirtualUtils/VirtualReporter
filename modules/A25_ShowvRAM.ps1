@@ -1,11 +1,11 @@
-function ShowvRAM () {
+function ShowvRAM ([hashtable]$vCheckDataObjects) {
 
   if ($ShowvRAM) {
 
     Write-CustomOut "..Checking vRAM Allocations"
 
     #Function by @LUCD http://www.lucd.info/2011/07/13/query-vram/
-    function Get-vRAMInfo{
+    function Get-vRAMInfo {
       $memoryCapMB = 96 * 1KB
       $vRAMtab = @{
         "esxEssentials"=32;
@@ -14,14 +14,14 @@ function ShowvRAM () {
         "esxAdvanced"=32;
         "esxEnterprise"=64;
         "esxEnterprisePlus"=96
-      }
+			}
     
       $licMgr = Get-View LicenseManager
       $licAssignMgr = Get-View $licMgr.LicenseAssignmentManager
     
       $totals = @{}
     
-      $VMH | %{
+      $vCheckDataObjects["VMH"] | %{
         $lic = $licAssignMgr.QueryAssignedLicenses($_.Extensiondata.MoRef.Value)
         $licType = $lic[0].AssignedLicense.EditionKey
         $totalvRAM = ($vRAMtab[$licType] * $_.Extensiondata.Hardware.CpuInfo.NumCpuPackages)
@@ -52,6 +52,7 @@ function ShowvRAM () {
           }
         }
       }
+
       $totals.GetEnumerator() | %{
         New-Object PSObject -Property @{
           vCenter = $_.Value.vCenter
@@ -71,6 +72,6 @@ function ShowvRAM () {
       $vRAMReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $vRAMReport
 }

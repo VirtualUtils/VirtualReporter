@@ -1,7 +1,7 @@
 # ---- Virtual Center Details ----
 function ShowVCDetails () {
 
-  if ($ShowVCDetails){
+  if ($ShowVCDetails) {
    
     Write-CustomOut "..Checking VC Services"
     

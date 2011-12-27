@@ -13,6 +13,6 @@ function ShowMapDiskRegionEvents () {
       $mapDiskRegionEventsReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $mapDiskRegionEventsReport
 }

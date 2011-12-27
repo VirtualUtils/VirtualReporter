@@ -1,5 +1,5 @@
 # VMKernel	Warnings check
-function ShowVMKernel () {
+function ShowVMKernel ([hashtable]$vCheckDataObjects) {
 
   if ($ShowVMKernel) {
   
@@ -36,7 +36,7 @@ function ShowVMKernel () {
             $Details.Google = "<a href='http://www.google.co.uk/search?q=$Message' target='_blank'>Click Here</a>"
             
             if ($Details.Length -gt 0) {
-              if ($Details.Time -gt $Date.AddDays(-$vmkernelchk) -and $Details.Time -lt $Date) {
+              if ($Details.Time -gt $vCheckDataObjects["date"].AddDays(-$vmkernelchk) -and $Details.Time -lt $vCheckDataObjects["date"]) {
                 $VMKernelWarning += $Details
               }
             }
@@ -65,7 +65,7 @@ function ShowVMKernel () {
             $Details.Google = "<a href='http://www.google.co.uk/search?q=$Message' target='_blank'>Click Here</a>"
             
             if ($Details.Length -gt 0) {						
-              if ($Details.Time -gt $Date.AddDays(-$VMKernelchk)) {
+              if ($Details.Time -gt $vCheckDataObjects["date"].AddDays(-$VMKernelchk)) {
                 $VMKernelWarning += $Details
               }
             }

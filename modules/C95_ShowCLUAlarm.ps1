@@ -1,14 +1,13 @@
 # ---- Cluster Config Issues ----
-function ShowCLUAlarm () {
+function ShowCLUAlarm ([hashtable]$vCheckDataObjects) {
 
-  if ($ShowCLUAlarm){
+  if ($ShowCLUAlarm) {
    
     Write-CustomOut "..Checking Cluster Configuration Issues"
     
     $cluAlarms = @()
-    $clusviews = Get-View -ViewType ClusterComputeResource
 
-    foreach ($clusview in $clusviews) {
+    foreach ($clusview in $vCheckDataObjects["ClusterViews"]) {
       if ($clusview.ConfigIssue) {           
         $CluConfigIssues = $clusview.ConfigIssue
 
@@ -28,6 +27,6 @@ function ShowCLUAlarm () {
       $cluAlarmReport += Get-CustomHeaderClose                                                                                                                                                                                                                      
     }
   }
-  
+
   return $cluAlarmReport
 }

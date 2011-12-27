@@ -1,11 +1,11 @@
 # ---- CD-Roms Connected ----
-function ShowVMsCDRomConnected () {
+function ShowVMsCDRomConnected ([hashtable]$vCheckDataObjects) {
 
   if ($ShowCDROM) {
 
     Write-CustomOut "..Checking for connected CDRoms"
     
-    $CDConn = @($VM | Where { $_ | Get-CDDrive | Where { $_.ConnectionState.Connected -eq $true } } | Select Name, VMHost)
+    $CDConn = @($vCheckDataObjects["VM"] | Where { $_ | Get-CDDrive | Where { $_.ConnectionState.Connected -eq $true } } | Select Name, VMHost)
     $CDConn = $CDConn | Where { $_.Name -notmatch $CDFloppyConnectedOK }
 
     if (($CDConn | Measure-Object).count -gt 0 -or $ShowAllHeaders) {

@@ -1,29 +1,30 @@
 # Capacity Planner Info
-function ShowCapacityInfo() {
+function ShowCapacityInfo([hashtable]$vCheckDataObjects) {
 
   if ($ShowCapacityInfo) {
     Write-CustomOut "..Checking Capacity Info"
     $capacityinfo = @()
     
-    foreach ($cluv in (Get-View -ViewType ClusterComputeResource)) {
-      if ((Get-Cluster $cluv.name|Get-VM).count -gt 0) {
-        $clucapacity = "" |Select ClusterName, "Estimated Num VM Left (CPU)", "Estimated Num VM Left (MEM)"
+    foreach ($clusterView in $vCheckDataObjects["ClusterViews"]) {
+		
+      if ((Get-Cluster $clusterView.name | Get-VM).count -gt 0) {
+        $clucapacity = "" | Select ClusterName, "Estimated Num VM Left (CPU)", "Estimated Num VM Left (MEM)"
         
         # CPU
-        $DasRealCpuCapacity = $cluv.Summary.EffectiveCpu - (($cluv.Summary.EffectiveCpu*$cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumEffectiveHosts)
-        $CluCpuUsage = get-stat -entity $cluv.name -stat cpu.usagemhz.average -Start ($Date).adddays(-7) -Finish ($Date)
+        $DasRealCpuCapacity = $clusterView.Summary.EffectiveCpu - (($clusterView.Summary.EffectiveCpu*$clusterView.Configuration.DasConfig.FailoverLevel)/$clusterView.Summary.NumEffectiveHosts)
+        $CluCpuUsage = get-stat -entity $clusterView.name -stat cpu.usagemhz.average -Start ($vCheckDataObjects["date"]).adddays(-7) -Finish ($vCheckDataObjects["date"])
         $CluCpuUsageAvg = ($CluCpuUsage|Where-object{$_.value -gt ($CluCpuUsage|Measure-Object -average -Property value).average}|Measure-Object -Property value -Average).Average
-        $VmCpuAverage = $CluCpuUsageAvg/(Get-Cluster $cluv.name|Get-VM).count
+        $VmCpuAverage = $CluCpuUsageAvg/(Get-Cluster $clusterView.name|Get-VM).count
         $CpuVmLeft = [math]::round(($DasRealCpuCapacity-$CluCpuUsageAvg)/$VmCpuAverage,0)
       
         # Memory
-        $DasRealMemCapacity = $cluv.Summary.EffectiveMemory - (($cluv.Summary.EffectiveMemory*$cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumEffectiveHosts)
-        $CluMemUsage = get-stat -entity $cluv.name -stat mem.consumed.average -Start ($Date).adddays(-7) -Finish ($Date)
+        $DasRealMemCapacity = $clusterView.Summary.EffectiveMemory - (($clusterView.Summary.EffectiveMemory*$clusterView.Configuration.DasConfig.FailoverLevel)/$clusterView.Summary.NumEffectiveHosts)
+        $CluMemUsage = get-stat -entity $clusterView.name -stat mem.consumed.average -Start ($vCheckDataObjects["date"]).adddays(-7) -Finish ($vCheckDataObjects["date"])
         $CluMemUsageAvg = ($CluMemUsage|Where-object{$_.value -gt ($CluMemUsage|Measure-Object -average -Property value).average}|Measure-Object -Property value -Average).Average/1024
-        $VmMemAverage = $CluMemUsageAvg/(Get-Cluster $cluv.name|Get-VM).count
+        $VmMemAverage = $CluMemUsageAvg/(Get-Cluster $clusterView.name|Get-VM).count
         $MemVmLeft = [math]::round(($DasRealMemCapacity-$CluMemUsageAvg)/$VmMemAverage,0)
       
-        $clucapacity.ClusterName = $cluv.name
+        $clucapacity.ClusterName = $clusterView.name
         $clucapacity."Estimated Num VM Left (CPU)" = $CpuVmLeft
         $clucapacity."Estimated Num VM Left (MEM)" = $MemVmLeft
       
@@ -46,7 +47,7 @@ function ShowCapacityInfo() {
     #   Assumption 1.) Disk capacity - Free Space = space used by VMs
     #   Assumption 2.) used space / count of VMs = Avg Space used per VM
     #   Assumption 3.) we will reserve 15% of capacity for overhead  
-    foreach ($dc in $Datacenter) {
+    foreach ($dc in $vCheckDataObjects["Datacenter"]) {
       Clear-Variable forecast*
       
       Get-Datastore -Entity $dc | Get-View | %{ 
@@ -83,6 +84,6 @@ function ShowCapacityInfo() {
       $capacityInfoReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $capacityInfoReport
 }

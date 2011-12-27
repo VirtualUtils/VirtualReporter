@@ -1,6 +1,6 @@
 # Show host with remote TSM enabled
 # By bwuch
-function ShowRemoteTSM () {
+function ShowRemoteTSM ([hashtable]$vCheckDataObjects) {
 
   if ($ShowRemoteTSM) {
   
@@ -9,7 +9,7 @@ function ShowRemoteTSM () {
     $ErrorActionPreference="SilentlyContinue"
     $remoteTSM = @()
     
-    foreach ($vmhost in ($VMH)) {
+    foreach ($vmhost in $vCheckDataObjects["VMH"]) {
       $socket = new-object Net.Sockets.TcpClient
       $socket.connect($vmhost,22)
       

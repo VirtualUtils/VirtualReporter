@@ -1,12 +1,12 @@
 # —- Show CBT —– #
-function ShowCBT () {
+function ShowCBT ([hashtable]$vCheckDataObjects) {
   if ($ShowCBT) {
   
     Write-CustomOut "..Checking for CBT status"
     
     $cbt = @()
     
-    foreach ($vmguest in $FullVM){
+    foreach ($vmguest in $vCheckDataObjects["FullVM"]) {
       $name = $vmguest.name
       $vmguest.Config.ChangeTrackingEnabled | %{
         if ($CBTdefault -eq 'true'){

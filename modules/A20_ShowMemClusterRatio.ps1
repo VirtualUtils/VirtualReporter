@@ -1,6 +1,6 @@
 # Cluster Memory allocation ratios
 # Code provided by Ed: http://enterpriseadmins.org/blog/scripting/powercli-vcheck-5-40/#comments
-function ShowMemClusterRatio () {
+function ShowMemClusterRatio ([hashtable]$vCheckDataObjects) {
 
   if ($ShowMemClusterRatio) {
 
@@ -8,16 +8,16 @@ function ShowMemClusterRatio () {
 
   $FullClusterDetail = @()
 
-    foreach ($Cluster in $Clusters) {
+    foreach ($Cluster in $vCheckDataObjects["Clusters"]) {
 			
 			$clusterVMHosts = $Cluster | Get-VMHost | Sort Name
 
 			# If cluster has hosts, then process
 			if ($clusterVMHosts) {		
 		
-				$guestcnt,$clustervmemmb,$hostCount,$clustermem = 0,0,0,0
+				$guestcnt, $clustervmemmb, $hostCount, $clustermem = 0,0,0,0
 				
-				foreach ($ESXHost in clusterVMHosts) {
+				foreach ($ESXHost in $clusterVMHosts) {
 					$hostview = $ESXHost | get-view
 					$guestvmemmb = 0
 					foreach ($clustMemVM in ($ESXHost |Get-VM)){
@@ -48,6 +48,6 @@ function ShowMemClusterRatio () {
       $memClusterRatioReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $memClusterRatioReport
 }

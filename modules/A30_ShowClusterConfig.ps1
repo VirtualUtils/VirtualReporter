@@ -1,10 +1,12 @@
 #Cluster config check based on http://www.peetersonline.nl/index.php/vmware/check-vmware-configuration-with-powershell/
-Function ShowClusterConfig () {
+Function ShowClusterConfig ([hashtable]$vCheckDataObjects) {
 
   if ($ShowClusterConfig) {
 
-		ForEach ($Cluster in $Clusters) {
+		ForEach ($Cluster in $vCheckDataObjects["Clusters"]) {
+		
 			Write-CustomOut "..Checking cluster $Cluster"
+			
 			$clusterVMHosts = $Cluster | Get-VMHost | Sort Name
 
 			# If cluster has hosts, then process
@@ -12,7 +14,7 @@ Function ShowClusterConfig () {
 				$clusterVMHostViews = $clusterVMHosts | Get-View | Sort Name			
 			
 				if ($checkClusterDataStores) {
-					Write-CustomOut "..  Datastore check"
+					Write-CustomOut "....Datastore check"
 					$myDSCol = @()
 					$clustDatastores = Get-Datastore -VMHost $clusterVMHosts
 					$DSdiffs = $clusterVMHosts | ForEach {Compare-Object $clustDatastores (Get-Datastore -VMHost $_) -SyncWindow 1000} | ForEach {$_.InputObject} | Sort Name | Select Name -Unique
@@ -38,7 +40,7 @@ Function ShowClusterConfig () {
 				}
 				
 				if ($checkClusterLUNs) {
-					Write-CustomOut "..  SCSI LUN check"
+					Write-CustomOut "....SCSI LUN check"
 					$myLUNCol = @()
 					$LUNs = $clusterVMHostViews | ForEach {$_.Config.StorageDevice.ScsiLun | ForEach {$_.Uuid}} | Select -Unique
 					$LUNdiffs = @()
@@ -76,7 +78,7 @@ Function ShowClusterConfig () {
 				}
 				
 				if ($checkClusterPortGroups) {
-					Write-CustomOut "..  Portgroup check"
+					Write-CustomOut "....Portgroup check"
 				
 					$myPGCol = @()
 					$PortGroups = Get-VirtualPortGroup -VMHost $clusterVMHosts | ForEach {$_.Name} | Select -Unique
@@ -110,7 +112,7 @@ Function ShowClusterConfig () {
 				}
 				
 				if ($checkClusterBIOSVersions) {
-					Write-CustomOut "..  BIOS check"
+					Write-CustomOut "....BIOS check"
 					$BIOSDiff = @()
 				
 					$clusterVMHostViews | %{			
@@ -144,6 +146,6 @@ Function ShowClusterConfig () {
 			}
 		}
   }
-	
+
   return $ClusterConfigReport
 }

@@ -1,5 +1,5 @@
 # ---- SSL Certificate Checker ----
-function ShowSSLExpiration () {
+function ShowSSLExpiration ([hashtable]$vCheckDataObjects) {
 
   if ($ShowSSLExpiration) {
 
@@ -9,28 +9,29 @@ function ShowSSLExpiration () {
     $SslDetails = "" | Select HostName, IssuedBy, Expires, Status
     
     #First we will check the vCenter Server SSL Certificate
-    $SslDetails = Check-SSLCertificate $VIServer.name $VIServer.Port
+    $SslDetails = Check-SSLCertificate $VIServer.name $VIServer.Port $vCheckDataObjects
     
     if ($SslDetails.Status -ne "Normal") {
           $mySslObj += $SslDetails 
     }
     
     #Then we will check each host certificate.
-    Foreach ($VMHost in $VMH) {
+    Foreach ($VMHost in $vCheckDataObjects["VMH"]) {
         $hview = $vmHost |get-view
         $SslDetails = "" | Select HostName, IssuedBy, Expires, Status
         $SslDetails = Check-SSLCertificate $VMHost.name $hview.Summary.Config.Port
-        if ($SslDetails.Status -ne "Normal") {
+        
+				if ($SslDetails.Status -ne "Normal") {
           $mySslObj += $SslDetails 
         }
     }
 
-    If (($MySslObj | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
+    if (($MySslObj | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
       $sslExpirationReport += Get-CustomHeader "SSL Status Check : $($MySslObj.count)" "SSL Certificates should be replaced with ones issued from a trusted authority."
       $sslExpirationReport += Get-HTMLTable $MySslObj
       $sslExpirationReport += Get-CustomHeaderClose
     }
   }
-  
+	
   return $sslExpirationReport
 }

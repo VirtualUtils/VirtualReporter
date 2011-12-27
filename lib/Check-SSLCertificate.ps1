@@ -1,8 +1,10 @@
-function Check-SSLCertificate () {
+function Check-SSLCertificate {
+
   #Found starting point here:
   #http://myitpath.blogspot.com/2010/03/checking-ssl-cert-values-with.html
   $myhostname = $args[0]
   $port = $args[1]
+  $vCheckDataObjects = [hashtable]$args[2]
   
   $myObj = "" | select HostName, IssuedBy, Expires, Status
   
@@ -35,7 +37,7 @@ function Check-SSLCertificate () {
         #stream is authenticated, so print out success and expiration information read from cert
         $validto = $cert.getexpirationdatestring()
         $issuer =  $cert.get_issuer()
-        $expirationDays = (New-TimeSpan $date $validto).days
+        $expirationDays = (New-TimeSpan $vCheckDataObjects["date"] $validto).days
         
         $myObj.HostName = $myhostname
         $myObj.IssuedBy = $issuer.Replace(" DC=","").Replace("CN=","").Replace(",",".")

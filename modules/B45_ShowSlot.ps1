@@ -1,5 +1,5 @@
 # --- Cluster Slot Sizes ---
-function ShowSlot () {
+function ShowSlot ([hashtable]$vCheckDataObjects) {
 
   if ($ShowSlot) {
 
@@ -9,8 +9,9 @@ function ShowSlot () {
       
       $SlotInfo = @()
 
-      foreach ($Cluster in ($Clusters| Get-View)){
-        if ($Cluster.Configuration.DasConfig.Enabled -eq $true){
+      foreach ($Cluster in $vCheckDataObjects["ClusterViews"]) {
+			
+        if ($Cluster.Configuration.DasConfig.Enabled -eq $true) {
           $SlotDetails = $Cluster.RetrieveDasAdvancedRuntimeInfo()
           $Details = "" | Select Cluster, TotalSlots, UsedSlots, AvailableSlots
           $Details.Cluster = $Cluster.Name

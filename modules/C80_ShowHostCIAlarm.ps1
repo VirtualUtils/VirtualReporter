@@ -1,13 +1,13 @@
 # ---- Host ConfigIssue ----
-function ShowHostCIAlarm () {
+function ShowHostCIAlarm ([hashtable]$vCheckDataObjects) {
 
-  if ($ShowHostCIAlarm){
+  if ($ShowHostCIAlarm) {
 
     Write-CustomOut "..Checking Host Configuration Issues"
     
     $hostcialarms = @()
 
-    foreach ($HostsView in $HostsViews) {
+    foreach ($HostsView in $vCheckDataObjects["HostViews"]) {
       if ($HostsView.ConfigIssue) {           
         $HostConfigIssues = $HostsView.ConfigIssue
 

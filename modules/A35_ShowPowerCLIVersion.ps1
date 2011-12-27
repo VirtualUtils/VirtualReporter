@@ -1,10 +1,12 @@
 # Get the latest version of vCenter Update Manager snapins
 # http://communities.vmware.com/community/vmtn/vsphere/automationtools/powercli/updatemanager
 # As of 2010/12/29 the latest version is 4.1 build 266648 @ http://www.vmware.com/downloads/download.do?downloadGroup=VUM41PCLI
-function ShowPowerCLIVersion () {
+function ShowPowerCLIVersion ([hashtable]$vCheckDataObjects) {
 
   if ($ShowPowerCLIVersion) {
   
+		$powercliVersion = Get-PowerCliVersion
+		
     $vPowercliVersion = @()
 
     for ($i = 0; $i -lt $powercliVersion.SnapinVersions.Count; $i++) {
@@ -26,6 +28,6 @@ function ShowPowerCLIVersion () {
       $powerCLIVersionReport += Get-CustomHeaderClose
     }
   }
-  
+
   return $powerCLIVersionReport
 }

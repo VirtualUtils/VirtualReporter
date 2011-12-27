@@ -1,5 +1,5 @@
 # ---- VM Host Uptime Warnings ----
-function ShowHostUptime () {
+function ShowHostUptime ([hashtable]$vCheckDataObjects) {
 
   if ($CheckHostUptime) {
 
@@ -7,9 +7,9 @@ function ShowHostUptime () {
     
     $HostUptime = @()
     
-    $VMH | Get-View | % {
+    $vCheckDataObjects["VMH"] | Get-View | % {
       $myDetails = "" | select Host, "Uptime (days)", Status
-      $uptime = New-TimeSpan $_.Runtime.BootTime $date
+      $uptime = New-TimeSpan $_.Runtime.BootTime $vCheckDataObjects["date"]
       $myDetails.Host = $_.name
       $myDetails."Uptime (days)" = $uptime.days
 
@@ -26,7 +26,7 @@ function ShowHostUptime () {
       }
     }
     
-    If (($HostUptime | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
+    if (($HostUptime | Measure-Object).count -gt 0 -or $ShowAllHeaders) {
       $hostUptimeReport += Get-CustomHeader "Host uptime warnings : $($HostUptime.count)" "The following hosts have uptime over 60 days (and may require security patches) or under 3 days (recently added/rebooted)."
       $hostUptimeReport += Get-HTMLTable $HostUptime
       $hostUptimeReport += Get-CustomHeaderClose

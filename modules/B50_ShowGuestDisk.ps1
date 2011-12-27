@@ -1,11 +1,12 @@
 # ---- VM Disk Space - Less than x MB ----
-function ShowGuestDisk () {
+function ShowGuestDisk ([hashtable]$vCheckDataObjects) {
 
   if ($ShowGuestDisk) {
   
     Write-CustomOut "..Checking for Guests with less than $MBFree MB"
+		
     $MyCollection = @()
-    $AllVMs = $FullVM | Where {-not $_.Config.Template } | Where { $_.Runtime.PowerState -eq "poweredOn" -And ($_.Guest.toolsStatus -ne "toolsNotInstalled" -And $_.Guest.ToolsStatus -ne "toolsNotRunning")}
+    $AllVMs = $vCheckDataObjects["FullVM"] | Where {-not $_.Config.Template } | Where { $_.Runtime.PowerState -eq "poweredOn" -And ($_.Guest.toolsStatus -ne "toolsNotInstalled" -And $_.Guest.ToolsStatus -ne "toolsNotRunning")}
     $SortedVMs = $AllVMs | Select *, @{N="NumDisks";E={@($_.Guest.Disk.Length)}} | Sort-Object -Descending NumDisks
    
    ForEach ($VMdsk in $SortedVMs){

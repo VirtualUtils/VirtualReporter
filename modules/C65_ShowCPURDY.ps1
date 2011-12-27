@@ -1,13 +1,13 @@
 # ---- CPU %Ready Check ----
-function ShowCPURDY () {
+function ShowCPURDY ([hashtable]$vCheckDataObjects) {
 
-  if ($ShowCPURDY){
+  if ($ShowCPURDY) {
     
     Write-CustomOut "..Checking VM CPU %RDY"
     
     $myCol = @()
 
-    foreach ($v in ($VM | Where {$_.PowerState -eq "PoweredOn"})){
+    foreach ($v in ($vCheckDataObjects["VM"] | Where {$_.PowerState -eq "PoweredOn"})){
       For ($cpunum = 0; $cpunum -lt $v.NumCpu; $cpunum++){
         $myObj = "" | Select VM, VMHost, CPU, PercReady
         $myObj.VM = $v.Name

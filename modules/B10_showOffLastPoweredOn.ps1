@@ -1,5 +1,5 @@
 # ---- Powered Off VMs with last powered on task date ----
-function showOffLastPoweredOn () {
+function showOffLastPoweredOn ([hashtable]$vCheckDataObjects) {
 
   if ($showOffLastPoweredOn) {
 
@@ -7,7 +7,7 @@ function showOffLastPoweredOn () {
     
     $guestDownTime = @()
 
-    $vm | where {$_.PowerState -eq "PoweredOff"} | %{
+    $vCheckDataObjects["VM"] | where {$_.PowerState -eq "PoweredOff"} | %{
       $Details = "" | select VM, PowerState, LastPowerOn, DiskGB
       $Details.VM = $_.name
       $Details.PowerState = $_.PowerState

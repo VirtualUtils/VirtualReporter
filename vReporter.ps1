@@ -182,18 +182,12 @@ If ((Get-View ServiceInstance).Content.About.Version -ge "4.0.0") {
   $vSphere = $false
 }
 
-# -> RJS December 19, 2011
-# Call Get-CoreObjects to get all objects required for nodules
-# Future: Remove global variables from the function and return a data structure
-#         and either pass the structure to the modules, or the required object(s)
-#         from the structure.
+# -> RJS December 20, 2011
 
 # Get core VMware objects for the modules
-Get-CoreObjects
+$vCheckDataObjects = Get-CoreObjects
 
-# <- RJS December 19, 2011
-
-$Date = Get-Date
+# <- RJS December 20, 2011
 
 # Create report
 $MyReport = Get-CustomHTML "$VIServer vCheck"
@@ -217,7 +211,7 @@ $totalModExecutionTime = (Measure-Command {
 	
     $modExecutionTime = (Measure-Command {
 	  
-	  $MyReport += Invoke-Expression $moduleToCall
+    $MyReport += Invoke-Expression ($moduleToCall + ' $vCheckDataObjects')
     }).TotalSeconds
     
     Write-CustomOut "..Finished execution of $moduleToCall in $modExecutionTime seconds"
@@ -230,6 +224,6 @@ Write-CustomOut "..Finished execution of modules. Total execution time was $tota
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
 
-exportReports
+exportReports $vCheckDataObjects
 
 $VIServer | Disconnect-VIServer -Confirm:$false

@@ -1,33 +1,40 @@
 # Get core VMware objects for the modules
-function Get-CoreObjects {
+function Get-CoreObjects () {
 
+  $vCheckDataObjects = @{}
+  
+  $vCheckDataObjects.Add("date", $(Get-Date))
+  
   Write-CustomOut "Collecting VM Objects"
-  Set-Variable -Name VM -Value $(Get-VM | Sort Name) -Scope Global
+  $vCheckDataObjects.Add("VM", $(Get-VM | Sort Name))
 
   Write-CustomOut "Collecting Datacenter Objects"
-  Set-Variable -Name Datacenter -Value $(Get-Datacenter | Sort Name) -Scope Global
+  $vCheckDataObjects.Add("Datacenter", $(Get-Datacenter | Sort Name))
 
   Write-CustomOut "Collecting VM Host Objects"
-  Set-Variable -Name VMH -Value $(Get-VMHost | Sort Name) -Scope Global
+  $vCheckDataObjects.Add("VMH", $(Get-VMHost | Sort Name))
 
   Write-CustomOut "Collecting Cluster Objects"
-  Set-Variable -Name Clusters -Value $(Get-Cluster | Sort Name) -Scope Global
+  $vCheckDataObjects.Add("Clusters", $(Get-Cluster | Sort Name))
+	$vCheckDataObjects.Add("ClusterViews", $(Get-View -ViewType ClusterComputeResource | Sort Name))
 
   Write-CustomOut "Collecting Datastore Objects"
-  Set-Variable -Name Datastores -Value $(Get-Datastore | Sort Name) -Scope Global
+  $vCheckDataObjects.Add("Datastores", $(Get-Datastore | Sort Name))
 
   Write-CustomOut "Collecting Detailed VM Objects"
-  Set-Variable -Name FullVM -Value $(Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}) -Scope Global
+  $vCheckDataObjects.Add("FullVM", $(Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}))
 
   Write-CustomOut "Collecting Template Objects"
-  Set-Variable -Name VMTmpl -Value $(Get-Template) -Scope Global
+  $vCheckDataObjects.Add("VMTmpl", $(Get-Template))
 
   Write-CustomOut "Collecting Detailed VI Objects"
-  Set-Variable -Name serviceInstance -Value $(get-view ServiceInstance) -Scope Global
+  $vCheckDataObjects.Add("serviceInstance", $(get-view ServiceInstance))
 
   Write-CustomOut "Collecting Detailed Alarm Objects"
-  Set-Variable -Name alarmMgr -Value $(get-view $serviceInstance.Content.alarmManager) -Scope Global
+  $vCheckDataObjects.Add("alarmMgr", $(get-view $vCheckDataObjects["serviceInstance"].Content.alarmManager))
 
   Write-CustomOut "Collecting Detailed VMHost Objects"
-  Set-Variable -Name HostsViews -Value $(Get-View -ViewType hostsystem) -Scope Global
+  $vCheckDataObjects.Add("HostsViews", $(Get-View -ViewType hostsystem))
+  
+  return $vCheckDataObjects
 }

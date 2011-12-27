@@ -1,12 +1,12 @@
 # ---- Snapshot Information ----
-function ShowSnap () {
+function ShowSnap ([hashtable]$vCheckDataObjects) {
 
   if ($ShowSnap) {
     Write-CustomOut "..Checking Snapshots"
     
     $snapshots = @()
     
-    $vm | Get-Snapshot | Where {$_.Created -lt (($Date).AddDays(-$SnapshotAge))} | %{
+    $vCheckDataObjects["VM"]| Get-Snapshot | Where {$_.Created -lt (($vCheckDataObjects["date"]).AddDays(-$SnapshotAge))} | %{
       $objSnap = $_
       $detail = "" | select VM, SnapshotName, DaysOld, Creator, SizeMB, Created, Description
       $detail.VM = $_.VM.name
